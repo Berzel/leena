@@ -1,0 +1,17 @@
+{
+  consul: "consul:8500",
+  jobs : [
+      {
+          name : 'user-service-mysql',
+          exec : 'mysqld --user=mysql',
+          restarts: 'unlimited',
+          port : 3306,
+          health : {
+              exec : 'echo "<== Dummy mysql test ==>"',
+              interval : 10,
+              ttl : 30,
+              timeout : '5s'
+          }
+      }
+  ]
+}

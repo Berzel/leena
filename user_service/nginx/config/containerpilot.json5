@@ -1,0 +1,40 @@
+{
+  consul: "consul:8500",
+  jobs: [
+    {
+      name: "setup",
+      exec: "/usr/bin/setup.sh"
+    },
+    {
+      name: "user-service-nginx",
+      exec: ["nginx", "-g", "daemon off;"],
+      restarts: "unlimited",
+      port: 80,
+      interfaces: ["eth1", "eth0"],
+      when: {
+        source: "setup",
+        once: "exitSuccess"
+      },
+      health: {
+        exec: "/usr/bin/curl --fail -s -o /dev/null http://localhost",
+        interval: 10,
+        ttl: 30,
+        timeout: "5s"
+      }
+    },
+    {
+      name: "reload",
+      exec: "/usr/bin/reload.sh",
+      when: {
+        source: "watch.user-service-php",
+        each: "changed"
+      }
+    }
+  ],
+  watches: [
+    {
+      name: "user-service-php",
+      interval: 5
+    }
+  ]
+}

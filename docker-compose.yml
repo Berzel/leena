@@ -1,0 +1,35 @@
+consul:
+  build: auto_discovery_service/consul
+  restart: always
+
+user_service_php:
+  build: user_service/php
+  volumes_from:
+    - user_service_source
+  links:
+    - consul
+    - user_service_mysql
+
+user_service_nginx:
+  build: user_service/nginx
+  volumes_from:
+    - user_service_source
+  ports:
+    - 0:80
+  links:
+    - consul
+
+user_service_mysql:
+  build: user_service/mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=user_service
+    - MYSQL_USER=berzel
+    - MYSQL_PASSWORD=password
+  links:
+    - consul
+
+user_service_source:
+  image: alpine
+  volumes:
+    - /home/snowy/Documents/code/leena/user_service/source:/var/www/html

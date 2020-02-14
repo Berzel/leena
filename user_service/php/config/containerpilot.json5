@@ -1,0 +1,17 @@
+{
+  consul: "consul:8500",
+  jobs : [
+      {
+          name : 'user-service-php',
+          exec : 'php-fpm -F',
+          restarts: 'unlimited',
+          port : 9000,
+          health : {
+              exec : 'php-fpm -t',
+              interval : 10,
+              ttl : 30,
+              timeout : '5s'
+          }
+      }
+  ]
+}
